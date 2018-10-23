@@ -524,11 +524,11 @@ public class Panel extends JPanel{
                 break;
                 
             case "Not Connected":
-                areaSummary.append("Caller not connected to the intended person. No car inventory is discussed. No new sell opportunity.");
+                areaSummary.append("Caller not connected with the intended person. No car inventory is discussed. No new sell opportunity.");
                 break;
                 
             case "Other language":
-                areaSummary.append("Caller and agent star a conversation in a language different than english or spanish. Call tagged "
+                areaSummary.append("Caller and agent start a conversation in a language different than english or spanish. Call tagged "
                         + "as not conected.");
                 break;
         }       
