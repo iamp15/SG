@@ -10,16 +10,11 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.FieldPosition;
 import java.text.ParseException;
-import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.*;
 import static javax.swing.JFrame.*;
 
@@ -38,9 +33,9 @@ public class Ventana extends JFrame{
     public Ventana(){
 
        
-        setTitle("IAMP Summary Generator");
+        setTitle("IAMP Summary Generator - Trial version");
 
-        setSize(1100,620);   //Establezco posicion y tamanio de la ventana
+        setSize(1050,570);   //Establezco posicion y tamanio de la ventana
         
         setDefaultCloseOperation(EXIT_ON_CLOSE);    //establezco que al cerrar la ventana se detega la ejecucion del programa
         
@@ -49,7 +44,9 @@ public class Ventana extends JFrame{
             @Override
             public void windowOpened(WindowEvent e){
                 
-                if(licencia.exists()){
+                File c = new File("data/conteo.txt");
+                
+                if(licencia.exists() && c.exists()){
                     try {
                         String otraFecha = loadDate();       //string para guardar la fecha de creacion de licencia           
                         SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
@@ -65,7 +62,12 @@ public class Ventana extends JFrame{
                     if(fActual.after(fExp)) vencida = true;
                     
                 }
-                else{
+                if(!licencia.exists() && c.exists()){
+                    JOptionPane.showMessageDialog(Ventana.this, "Error code 015. Please email to iamp15@hotmail.com to solve this problem.");
+                    System.exit(0);
+                }
+
+                if(!licencia.exists() && !c.exists()){
                     //Mensaje que da la bienvenida al usuario y preunta si desea iniciar el periodo de prueba
                     ini = JOptionPane.showConfirmDialog(Ventana.this, "Welcome to IAMP Summary Generator trial version."
                             + "\nWould you like to start your "+trialP+ " days trial period?","IAMP Summary Generator "+trialP+" days trial "
@@ -86,7 +88,7 @@ public class Ventana extends JFrame{
                     else System.exit(0);
                
                 }
-                System.out.println(vencida);
+                
                 if(vencida){
                     JOptionPane.showMessageDialog(Ventana.this, "Trial period expired. Please send an e-mail to iamp15@hotmail.com for "
                             + "renewal information.");

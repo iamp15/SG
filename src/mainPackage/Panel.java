@@ -1,9 +1,13 @@
 package mainPackage;
 
 
+import com.mxrck.autocompleter.TextAutoCompleter;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.*;
@@ -24,6 +28,10 @@ public class Panel extends JPanel{
     private final JTextField fieldArray[] = new JTextField[13];
     private final Color colorFondo = new Color(46,117,182); //Creo el color de fondo de la app
     private int k, j,count;
+    private TextAutoCompleter acCName, acAName, acVMake, acVModel;
+    private Set <String> listaNombres = new HashSet<>();
+    private Set <String> listaMarcas = new HashSet<>();
+    private Set <String> listaModelos = new HashSet<>();
     
     //Constructor
     public Panel(){
@@ -59,13 +67,21 @@ public class Panel extends JPanel{
         
         laminaInferior.setBackground(colorFondo);
         
-        add(laminaSuperior,BorderLayout.NORTH);
+        //add(laminaSuperior,BorderLayout.NORTH);
         add(laminaMedio,BorderLayout.CENTER);
         add(laminaInferior,BorderLayout.SOUTH);
         
          
         initComponents();
-       
+        
+        acCName = new TextAutoCompleter(fieldArray[0]);
+        acAName = new TextAutoCompleter(fieldArray[6]);
+        acVMake = new TextAutoCompleter(fieldArray[4]);
+        acVModel = new TextAutoCompleter(fieldArray[5]);
+        
+        fillAC();
+
+        
         
         
     }
@@ -76,11 +92,11 @@ public class Panel extends JPanel{
         int ancho=100, anchoLabel=70;
         int alto=25;
         
-        //Barra de herramientas
-        JMenuBar barraHerramientas = new JMenuBar();
-        JMenu settings = new JMenu("Settings");
-        barraHerramientas.add(settings);
-        laminaSuperior.add(barraHerramientas);
+        //Barra de herramientas  // NO IMPLEMENTADO
+//        JMenuBar barraHerramientas = new JMenuBar();
+//        JMenu settings = new JMenu("Settings");
+//        barraHerramientas.add(settings);
+//        laminaSuperior.add(barraHerramientas);
         
         
         //Cuadros de texto y eqtiquetas
@@ -131,13 +147,14 @@ public class Panel extends JPanel{
         laminaMedio.add(comboResponse);
                         
         //Vehicle (year, make, model) (label & textField)
-        createLabel("Vehicle:", 260,80,anchoLabel,alto);       
-        createTextField(320,80,ancho,alto);
-        createTextField(430,80,ancho,alto);
-        createTextField(540,80,ancho,alto);
+        createLabel("Vehicle (year/make/model):", 260,80,170,alto);       
+        createTextField(415,80,ancho,alto);        
+        createTextField(525,80,ancho,alto);       
+        createTextField(635,80,ancho,alto);
+        
         
         //Agent name (label & textField)
-        createLabel("Agent name:",780,80,100, alto);
+        createLabel("Agent name:",780,80,100, alto);        
         createTextField(860,80,ancho,alto);
         
         
@@ -179,7 +196,7 @@ public class Panel extends JPanel{
         //FILA 4----------------------------------------------------------------------------------------------------------------
         
         //Client vehicle
-        createLabel("Clt. vehicle: ",20,200,anchoLabel, alto);
+        createLabel("Clt. vehicle:",20,200,anchoLabel, alto);
         createTextField(100,200,120,alto);
         
         //Time for appointment
@@ -601,6 +618,12 @@ public class Panel extends JPanel{
                         areaSummary.selectAll();
                         areaSummary.copy();
                         countUp();
+                        updateAC();
+                        if(!vMake.matches("") && !vModel.matches("")){
+                            sg_DataBase.saveCar(vMake, vModel);
+                        }
+                        if(!clientName.matches("")) sg_DataBase.saveName(clientName);
+                        if(!agentName.matches("")) sg_DataBase.saveName(agentName);
                         break;
                         
                     case "Copy":
@@ -809,6 +832,49 @@ public class Panel extends JPanel{
         }
         
         
+    }
+    
+   
+    
+    private void fillAC(){
+        
+        ResultSet r1 = sg_DataBase.loadNames();
+        ResultSet r2 = sg_DataBase.loadmm();
+ 
+        
+        try {
+            while(r1.next()){
+                if(!acCName.itemExists(r1.getString(1))) acCName.addItem(r1.getString(1));
+                if(!acAName.itemExists(r1.getString(1))) acAName.addItem(r1.getString(1));                             
+            }
+            while(r2.next()){
+                if(!acVMake.itemExists(r2.getString(1))) acVMake.addItem(r2.getString(1));  
+                if(!acVModel.itemExists(r2.getString(2))) acVModel.addItem(r2.getString(2));                                
+            }
+        } catch (SQLException ex) {
+            System.out.println("Error al agregar nombres al AC");
+        }
+      
+        
+    }
+    
+    public void updateAC(){
+           
+        if(!clientName.matches("")){
+            if(!acCName.itemExists(clientName)) acCName.addItem(clientName);
+            if(!acAName.itemExists(clientName)) acAName.addItem(clientName);
+        }
+    
+        if(!agentName.matches("")){
+            if(!acCName.itemExists(agentName)) acCName.addItem(agentName);
+            if(!acAName.itemExists(agentName)) acAName.addItem(agentName);
+        } 
+        
+        if(!vMake.matches("") && !vModel.matches("")){
+            if(!acVMake.itemExists(vMake)) acVMake.addItem(vMake);
+            if(!acVModel.itemExists(vModel)) acVModel.addItem(vModel);
+        } 
+         
     }
     
     
