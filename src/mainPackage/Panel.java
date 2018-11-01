@@ -679,7 +679,7 @@ public class Panel extends JPanel{
         for(JCheckBox i: chkBox){
             if(i.isSelected()) i.setSelected(false);
         }
-        
+        fillAC();
         areaSummary.setText("");
     }
     
@@ -717,11 +717,14 @@ public class Panel extends JPanel{
                     case 4:
                         vMake = doc.getText(0, doc.getLength());
                         comboResponse.setSelectedItem("No response");
+                        if(acVMake.itemExists(vMake)) specModels(vMake);
+                        if(vMake.matches("")) fillAC();
                         break;
                         
                     case 5:
                         vModel = doc.getText(0, doc.getLength());
                         comboResponse.setSelectedItem("No response");
+                        if(acVModel.itemExists(vModel)) setACMake(vModel);
                         break;    
                                                 
                     case 6:
@@ -778,17 +781,21 @@ public class Panel extends JPanel{
                         
                     case 3:
                         vYear = doc.getText(0, doc.getLength());
-                        comboResponse.setSelectedItem("Car is available");
+                        comboResponse.setSelectedItem("No response");
                         break;
                         
                     case 4:
                         vMake = doc.getText(0, doc.getLength());
-                        comboResponse.setSelectedItem("Car is available");
+                        comboResponse.setSelectedItem("No response");
+                        if(acVMake.itemExists(vMake)) specModels(vMake);
+                        if(vMake.matches("")) fillAC();
                         break;
                         
                     case 5:
                         vModel = doc.getText(0, doc.getLength());
-                        comboResponse.setSelectedItem("Car is available");
+                        comboResponse.setSelectedItem("No response");
+                        if(acVModel.itemExists(vModel)) setACMake(vModel);
+
                         break;    
                                                 
                     case 6:
@@ -876,6 +883,46 @@ public class Panel extends JPanel{
         } 
          
     }
+    
+    //Metodo que verifica si la marca ingresada existe y carga al AC los modelos pertenecientes a esa marca
+    public void specModels(String make){
+        
+        ResultSet r;
+        
+        r = sg_DataBase.getModels(make);
+        acVModel.removeAllItems();
+        try {
+            while(r.next()){
+                acVModel.addItem(r.getString(1));
+            }
+        } catch (SQLException ex) {
+            System.out.println("Error al agregar modelos especificos");
+        }
+            
+   
+    }
+    
+    public void setACMake(String model){
+        ResultSet r;
+        
+        r = sg_DataBase.selectMake(model);
+       
+        try {
+            r.first();
+            String marca = r.getString(1);
+            if(!vMake.matches(marca)) fieldArray[4].setText(marca);
+            
+        } catch (SQLException ex) {
+            System.out.println("Error al escoger marca especificada");
+        }   
+    }
+    
+    
+    
+    
+    
+    
+    
     
     
 }

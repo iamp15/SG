@@ -64,9 +64,45 @@ public class sg_DataBase {
         return r1;
     }
     
-//    public static ResultSet loadModels(){
+    public static ResultSet getModels(String make){
+        ResultSet r1 = null;
+        
+        try {
+            Connection con1 = DriverManager.getConnection("jdbc:mysql://localhost:3306/iamp_sg?autoReconnect=true&useSSL=false", "root", "");
+            PreparedStatement state1 = con1.prepareStatement("SELECT MODELO FROM carros WHERE marca=?");
+            state1.setString(1, make);
+            r1 = state1.executeQuery();
+
+        } catch (SQLException ex) {
+            System.out.println("Error al cargar los modelos especificados");
+        }
+        return r1;
+           
+    }
+    
+    public static ResultSet selectMake(String modelo){
+        
+        ResultSet r1 = null;
+        
+        try {
+            Connection con1 = DriverManager.getConnection("jdbc:mysql://localhost:3306/iamp_sg?autoReconnect=true&useSSL=false", "root", "");
+            PreparedStatement state1 = con1.prepareStatement("SELECT Marca FROM carros WHERE modelo=?");
+            state1.setString(1, modelo);
+            r1 = state1.executeQuery();
+
+        } catch (SQLException ex) {
+            System.out.println("Error al cargar marca especificada");
+        }
+        return r1;
+        
+        
+    }
+    
+//    public static ResultSet loadModels(){       
 //        ResultSet r1 = null;
 //        
+    
+    
 //        try {
 //            Connection con1 = DriverManager.getConnection("jdbc:mysql://localhost:3306/iamp_sg?autoReconnect=true&useSSL=false", "root", "");
 //            Statement state1 = con1.createStatement();
